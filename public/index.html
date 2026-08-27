@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Trợ Giải — AI học tập</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+<link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+<div id="app">
+  <div id="sidebarOverlay"></div>
+  <aside id="sidebar">
+    <div class="brand">
+      <button id="closeSidebarBtn" title="Đóng">✕</button>
+      <span class="eyebrow">Trợ Giải · AI học tập</span>
+      <h1>Giải bài & trích nguồn</h1>
+      <p>Thêm nguồn tài liệu để AI trả lời chính xác, có trích dẫn rõ ràng.</p>
+    </div>
+
+    <div id="sourcesPanel">
+      <div class="sp-head">
+        <h2>Nguồn</h2>
+        <button id="addSourceBtn">＋ Thêm nguồn</button>
+      </div>
+      <div id="dropHint">📎 Kéo thả PDF · DOCX · TXT vào đây, hoặc bấm "Thêm nguồn"</div>
+      <input type="file" id="fileInput" multiple accept=".pdf,.docx,.txt">
+      <div id="emptySources">Chưa có nguồn nào. Thêm tài liệu để AI dùng làm căn cứ trả lời và trích dẫn chính xác.</div>
+      <ul id="sourceList"></ul>
+    </div>
+
+    <button id="settingsBtnSide"><span class="gear" id="settingsGearIcon"></span> Cài đặt AI</button>
+  </aside>
+
+  <main id="main">
+    <div id="topbar">
+      <div class="left">
+        <button id="menuBtn" class="iconbtn"></button>
+        <span class="title">Phòng giải bài</span>
+      </div>
+      <div class="right">
+        <span class="status" id="statusText">SẴN SÀNG</span>
+        <button id="themeBtn" class="iconbtn" title="Đổi giao diện sáng/tối"></button>
+        <button id="settingsBtnTop" class="iconbtn" title="Cài đặt AI"></button>
+      </div>
+    </div>
+
+    <div id="thread"></div>
+
+    <div id="composer">
+      <div id="composerInner">
+        <div id="imgPreviewWrap"></div>
+        <div id="chatBar">
+          <textarea id="qInput" rows="1" placeholder="Nhập câu hỏi, dán đề bài, hoặc đính kèm ảnh…"></textarea>
+          <div id="chatBarTools">
+            <input type="file" id="imageInput" accept="image/*" capture="environment" style="display:none;">
+            <button id="attachBtn" type="button" class="tool-btn icon-only" title="Chụp / đính kèm ảnh đề bài"></button>
+            <div id="thinkBtnWrap">
+              <button id="thinkBtn" type="button" class="tool-btn"></button>
+              <div id="thinkPopover">
+                <button class="think-opt active" data-mode="fast">
+                  <span class="ic" data-icon="zap"></span>
+                  <span><span class="tt">Nhanh</span><br><span class="dd">Trả lời trực tiếp, tốc độ cao — phù hợp bài tập đơn giản.</span></span>
+                </button>
+                <button class="think-opt" data-mode="deep">
+                  <span class="ic" data-icon="sparkles"></span>
+                  <span><span class="tt">Suy nghĩ sâu</span><br><span class="dd">Tự kiểm tra nhiều hướng trước khi trả lời — chậm hơn, chính xác hơn cho bài khó.</span></span>
+                </button>
+              </div>
+            </div>
+            <button id="sendBtn">Giải bài</button>
+          </div>
+        </div>
+        <div id="hint">Enter để gửi · Shift+Enter xuống dòng · Kết quả trích nguồn từ tài liệu đã bật ở khung "Nguồn"</div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<div id="settingsOverlay">
+  <div id="settingsModal">
+    <div class="set-head">
+      <h2>⚙️ Cài đặt AI</h2>
+      <button class="set-close" id="settingsCloseBtn">✕</button>
+    </div>
+
+    <div class="set-section">
+      <h3>Phong cách trả lời</h3>
+      <div class="set-row">
+        <label>Độ chi tiết lời giải</label>
+        <div class="chipset" id="detailChips">
+          <button class="chip" data-val="ngắn gọn">Ngắn gọn</button>
+          <button class="chip active" data-val="tiêu chuẩn">Tiêu chuẩn</button>
+          <button class="chip" data-val="rất chi tiết">Rất chi tiết</button>
+        </div>
+      </div>
+      <div class="set-row">
+        <label>Ngôn ngữ trả lời</label>
+        <div class="chipset" id="langChips">
+          <button class="chip active" data-val="Tiếng Việt">Tiếng Việt</button>
+          <button class="chip" data-val="English">English</button>
+          <button class="chip" data-val="tự động theo câu hỏi">Tự động theo câu hỏi</button>
+        </div>
+      </div>
+      <div class="set-row">
+        <label>Giao diện</label>
+        <div class="themebtns">
+          <button class="chip" id="setLightBtn">☀️ Sáng</button>
+          <button class="chip" id="setDarkBtn">🌙 Tối</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="set-section">
+      <h3>Quy tắc tự học (ghi nhớ lâu dài)</h3>
+      <textarea id="ruleInput" placeholder="VD: Luôn trình bày lời giải Toán theo từng bước có đánh số."></textarea>
+      <button id="ruleAddBtn">＋ Thêm quy tắc</button>
+      <ul id="ruleList"></ul>
+    </div>
+
+    <div class="set-section">
+      <h3>Dữ liệu</h3>
+      <button class="danger-btn" id="clearHistoryBtn">Xóa lịch sử trò chuyện</button>
+    </div>
+  </div>
+</div>
+
+<!-- Thư viện phía client: đọc PDF/DOCX, hiển thị công thức toán, vẽ đồ thị, xuất PPTX -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/12.4.0/math.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js"></script>
+
+<script src="/js/config.js"></script>
+<script src="/js/app.js"></script>
+</body>
+</html>
